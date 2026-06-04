@@ -1,95 +1,54 @@
 import { useEffect, useState } from 'react';
-import { AppState } from '../types';
-
-interface Props {
-  state: AppState;
-  goTo: (step: AppState['step']) => void;
-}
 
 const steps = [
-  { label: 'Leyendo tu extracto bancario...', duration: 2000 },
-  { label: 'Identificando ingresos y gastos...', duration: 2500 },
-  { label: 'Aplicando normativa fiscal española...', duration: 2000 },
-  { label: 'Calculando tu reserva de impuestos...', duration: 1500 },
-  { label: 'Estimando tu sueldo seguro...', duration: 1500 },
+  'Leyendo tu extracto bancario...',
+  'Identificando ingresos y gastos...',
+  'Aplicando normativa fiscal española...',
+  'Calculando tu reserva de impuestos...',
+  'Estimando tu sueldo seguro...',
 ];
 
-export default function Processing({ }: Props) {
+export default function Processing() {
   const [currentStep, setCurrentStep] = useState(0);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
+    const durations = [2000, 2500, 2000, 1500, 1500];
     let elapsed = 0;
-    const total = steps.reduce((s, st) => s + st.duration, 0);
-    
-    steps.forEach((step, i) => {
-      setTimeout(() => {
-        setCurrentStep(i);
-        setProgress(Math.round(((elapsed + step.duration) / total) * 100));
-      }, elapsed);
-      elapsed += step.duration;
+    const total = durations.reduce((a, b) => a + b, 0);
+    durations.forEach((dur, i) => {
+      setTimeout(() => { setCurrentStep(i); setProgress(Math.round(((elapsed + dur) / total) * 100)); }, elapsed);
+      elapsed += dur;
     });
   }, []);
 
   return (
-    <div
-      className="min-h-screen flex flex-col items-center justify-center px-6"
-      style={{ background: 'var(--paper)' }}
-    >
-      <div className="w-full max-w-sm text-center">
-        {/* Logo */}
-        <p className="font-serif text-2xl mb-16" style={{ color: 'var(--ink)' }}>fintonomy</p>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'var(--paper)', padding: '40px 24px' }}>
+      <p className="serif" style={{ fontSize: 24, color: 'var(--ink)', marginBottom: 60 }}>fintonomy</p>
 
-        {/* Animated ring */}
-        <div className="relative w-24 h-24 mx-auto mb-10">
-          <svg className="w-24 h-24 -rotate-90" viewBox="0 0 96 96">
-            <circle
-              cx="48" cy="48" r="40"
-              fill="none"
-              stroke="var(--cream)"
-              strokeWidth="6"
-            />
-            <circle
-              cx="48" cy="48" r="40"
-              fill="none"
-              stroke="var(--gold)"
-              strokeWidth="6"
-              strokeLinecap="round"
-              strokeDasharray={`${2 * Math.PI * 40}`}
-              strokeDashoffset={`${2 * Math.PI * 40 * (1 - progress / 100)}`}
-              style={{ transition: 'stroke-dashoffset 0.8s ease' }}
-            />
-          </svg>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-lg font-medium" style={{ color: 'var(--ink)' }}>{progress}%</span>
-          </div>
+      <div style={{ position: 'relative', width: 96, height: 96, marginBottom: 40 }}>
+        <svg width="96" height="96" viewBox="0 0 96 96" style={{ transform: 'rotate(-90deg)' }}>
+          <circle cx="48" cy="48" r="40" fill="none" stroke="var(--cream)" strokeWidth="6" />
+          <circle cx="48" cy="48" r="40" fill="none" stroke="var(--gold)" strokeWidth="6" strokeLinecap="round"
+            strokeDasharray={`${2 * Math.PI * 40}`}
+            strokeDashoffset={`${2 * Math.PI * 40 * (1 - progress / 100)}`}
+            style={{ transition: 'stroke-dashoffset 0.8s ease' }}
+          />
+        </svg>
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ fontSize: 18, fontWeight: 500, color: 'var(--ink)' }}>{progress}%</span>
         </div>
-
-        {/* Current step */}
-        <p className="font-medium text-sm mb-2" style={{ color: 'var(--ink)' }}>
-          {steps[currentStep]?.label}
-        </p>
-
-        {/* Step dots */}
-        <div className="flex items-center justify-center gap-2 mt-6">
-          {steps.map((_, i) => (
-            <div
-              key={i}
-              className="rounded-full transition-all duration-300"
-              style={{
-                width: i === currentStep ? 20 : 6,
-                height: 6,
-                background: i <= currentStep ? 'var(--gold)' : 'var(--border)',
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Reassurance */}
-        <p className="text-xs mt-10" style={{ color: 'var(--muted)' }}>
-          Suele tardar entre 10 y 30 segundos según el extracto
-        </p>
       </div>
+
+      <p style={{ fontWeight: 500, fontSize: 14, color: 'var(--ink)', marginBottom: 24 }}>{steps[currentStep]}</p>
+
+      <div style={{ display: 'flex', gap: 6 }}>
+        {steps.map((_, i) => (
+          <div key={i} style={{ height: 6, borderRadius: 99, background: i <= currentStep ? 'var(--gold)' : 'var(--border)', width: i === currentStep ? 20 : 6, transition: 'all 0.3s' }} />
+        ))}
+      </div>
+
+      <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 40 }}>Suele tardar entre 10 y 30 segundos</p>
     </div>
   );
 }
